@@ -1,10 +1,22 @@
+<div align="center">
+
 # Secure RAG with Role-Based Access Control
 
-A document-question-answering API that checks access permissions **before retrieval** and before any source text is sent to a language model.
+### A permission-aware document question-answering API
 
-Python · FastAPI · SQLite · Qdrant · FastEmbed · Gemini
+[![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-Permissions-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![Qdrant](https://img.shields.io/badge/Qdrant-Vector%20Search-DC244C?logo=qdrant&logoColor=white)](https://qdrant.tech/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?logo=windows&logoColor=white)](#prerequisites)
 
-Authenticate → filter permitted documents → retrieve → recheck permissions → generate a cited answer
+**Authenticate · Filter permitted documents · Retrieve · Recheck access · Generate a cited answer**
+
+[Overview](#overview) • [Features](#features) • [Installation](#installation) • [Usage](#usage) • [Output](#output) • [Limitations](#limitations)
+
+</div>
+
+---
 
 ## Overview
 
@@ -25,7 +37,7 @@ This system stores document permissions in SQLite and applies role and document-
 - Additional access checks before returning search results, before provider dispatch, and before returning an answer.
 - Automated security tests, offline evaluation, live answer checks, and a synthetic RBAC-filter benchmark.
 
-## How it works
+The request follows a permission-aware pipeline:
 
 ```text
 User question + bearer token
@@ -46,53 +58,99 @@ Recheck access before returning the answer and citations
 
 The vector index helps find relevant chunks, but SQLite remains the authority for users, roles, document permissions, and source text. A stale or altered vector payload is not trusted as prompt content.
 
+## Access model
+
+| Role | Employee Handbook | Salary Records |
+|---|---|---|
+| `Employee` | Allowed | Blocked |
+| `HR` | Allowed | Allowed |
+| `Admin` | Allowed | Allowed |
+
+These rules apply to the two fictional files in `sample_documents/`. Other uploaded documents can have different role permissions selected by an Admin.
+
 ## Technology stack
 
 | Technology | Purpose |
-| --- | --- |
-| Python and FastAPI | API routes, request validation, and interactive API documentation |
+|---|---|
+| Python | Application logic and data flow |
+| FastAPI | API routes, validation, and interactive `/docs` page |
 | SQLite and SQLAlchemy | Users, sessions, documents, chunks, and permissions |
 | Qdrant (local mode) | Permission-filtered vector search |
-| FastEmbed | Local text embeddings for semantic retrieval |
+| FastEmbed | Local embeddings for semantic retrieval |
 | Gemini Interactions API | Answer generation from permitted excerpts |
 | Pytest | Automated behavior and security checks |
+| Git and GitHub | Version control and repository hosting |
 
 ## Project structure
 
 ```text
-RAG-with-RBAC/
-├── app/                 API, authentication, ingestion, retrieval, RAG, evaluations
+secure-rag-rbac/
+├── app/
+│   ├── main.py
+│   ├── models.py
+│   ├── rag_service.py
+│   └── ...              API, authentication, ingestion, retrieval, evaluations
 ├── tests/               Automated tests with isolated test data
-├── sample_documents/    Fictional handbook and salary files for the demo
+├── sample_documents/    Fictional handbook and salary files
 ├── .gitignore
 ├── README.md
 └── requirements.txt
 ```
 
-The application creates `data/` for its local database, uploads, and vector index. Evaluations create `reports/`; setup creates `.venv/`. These are local-only and ignored by Git.
+Files generated locally while running the project:
+
+```text
+data/secure_rag.db      Users, sessions, documents, and permissions
+data/uploads/           Uploaded source files
+data/vector_store/      Local Qdrant index
+reports/                Evaluation and benchmark results
+.venv/                  Python environment and installed packages
+```
+
+These paths are ignored by Git so private data, local output, and installed packages are not included in normal commits.
 
 ## Prerequisites
 
-- Python and `pip`.
-- A Gemini API key only if you want generated answers. Retrieval and context preview do not need one.
-- Git if you want to clone or contribute to the repository.
+Before running the project, install:
+
+- [Python 3](https://www.python.org/downloads/) with `pip`
+- [Git](https://git-scm.com/downloads) if you want to clone the repository
+- [Visual Studio Code](https://code.visualstudio.com/) or another code editor
+
+A Gemini API key is needed only for generated answers. Retrieval and context preview do not need one.
 
 ## Installation
 
-Open a Windows PowerShell terminal in the project directory. If you downloaded or cloned a fresh copy, create a virtual environment and install dependencies:
+### 1. Clone the repository
+
+```powershell
+git clone https://github.com/GaganUH/secure-rag-rbac.git
+cd secure-rag-rbac
+```
+
+### 2. Create a virtual environment
 
 ```powershell
 python -m venv .venv
+```
+
+### 3. Install the required packages
+
+On Windows PowerShell, use the environment's Python directly; activation is not required:
+
+```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-Create the first Admin account once. The command asks for a password without displaying it:
+### 4. Create the first Admin account
+
+Run this once. The command asks for a password without displaying it:
 
 ```powershell
 .\.venv\Scripts\python.exe -m app.bootstrap_admin --username admin
 ```
 
-Start the API:
+### 5. Start the API
 
 ```powershell
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
@@ -185,29 +243,52 @@ These are small local results, not production guarantees. The benchmark times **
 
 ## How the code is organized
 
-| Module | Responsibility |
-| --- | --- |
-| `app/main.py` | Create the FastAPI application and register routes |
-| `app/models.py`, `app/database.py` | Define tables and database sessions |
-| `app/auth_service.py`, `app/user_service.py` | Authenticate accounts and manage users |
-| `app/document_service.py` | Validate, extract, chunk, and store documents |
-| `app/vector_service.py`, `app/retrieval_service.py` | Run semantic and keyword retrieval |
-| `app/rag_service.py`, `app/gemini_provider.py` | Prepare authorized context and generate answers |
-| `app/evaluate_security.py`, `app/evaluate_live.py`, `app/benchmark_rbac.py` | Measure behavior and performance |
+```text
+app/main.py
+├── Authentication and Admin routes
+│   ├── auth_service.py / user_service.py
+│   └── models.py / database.py
+├── Document routes
+│   └── document_service.py
+├── Retrieval routes
+│   ├── retrieval_service.py       Keyword search
+│   ├── vector_service.py          Semantic search
+│   └── retrieval_cache.py         Permission-aware cache
+└── RAG routes
+    ├── rag_service.py             Authorized context and final checks
+    └── gemini_provider.py         External answer generation
+```
+
+The three evaluation modules—`evaluate_security.py`, `evaluate_live.py`, and `benchmark_rbac.py`—are separate from the API request path. Their reports are written to the Git-ignored `reports/` directory.
 
 ## Error handling
 
-The API rejects missing authentication, non-Admin management requests, invalid uploads, and unsupported or unreadable files. A query with no accessible source returns a refusal instead of calling Gemini. Provider errors return a safe HTTP error category or status without echoing a raw provider response, prompt, or API key. Scanned PDFs without extractable text require OCR and are not accepted as searchable documents.
+The API handles common failures without exposing source text or credentials:
+
+- Missing or invalid bearer tokens are rejected.
+- Non-Admin users cannot create accounts or change document permissions.
+- Empty, oversized, duplicate, unsupported, or unreadable uploads are rejected.
+- Scanned PDFs without extractable text require OCR and are not accepted as searchable documents.
+- Queries without accessible sources receive a refusal instead of a Gemini call.
+- Provider failures return a safe HTTP error without echoing a raw provider response, prompt, or API key.
 
 ## Design decisions
 
-**Why filter inside retrieval?** A relevant but unauthorized chunk must not enter a prompt or citation list. Qdrant receives the role and currently permitted document IDs as query filters.
+### Why filter inside retrieval?
 
-**Why recheck SQLite after vector search?** Vector metadata may be stale. The system reads canonical source text and permissions from SQLite before constructing context and checks access again at response boundaries.
+A relevant but unauthorized chunk must not enter a prompt or citation list. Qdrant receives the role and currently permitted document IDs as query filters.
 
-**Why keep the cache permission-aware?** Cache keys include the user, permission version, role, and permitted-document fingerprint. Managed access changes also clear the process-local cache.
+### Why recheck SQLite after vector search?
 
-**Why skip Gemini for empty context?** Without a permitted source, the system has no authorized evidence for a document-grounded answer.
+Vector metadata may be stale. The system reads canonical source text and permissions from SQLite before constructing context and checks access again at response boundaries.
+
+### Why keep the cache permission-aware?
+
+Cache keys include the user, permission version, role, and permitted-document fingerprint. Managed access changes also clear the process-local cache.
+
+### Why skip Gemini for empty context?
+
+Without a permitted source, the system has no authorized evidence for a document-grounded answer.
 
 ## Limitations
 
@@ -230,4 +311,15 @@ Use fictional or otherwise approved documents while testing. Do not upload real 
 
 ## Author
 
-Gagan U. H. · GitHub: [@GaganUH](https://github.com/GaganUH)
+**Gagan U. H.**
+
+- GitHub: [@GaganUH](https://github.com/GaganUH)
+- Repository: [secure-rag-rbac](https://github.com/GaganUH/secure-rag-rbac)
+
+---
+
+<div align="center">
+
+Built for permission-aware retrieval and grounded document question answering.
+
+</div>
