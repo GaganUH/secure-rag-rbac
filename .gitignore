@@ -1,0 +1,28 @@
+# Local environment and secrets
+.venv/
+.env
+.env.*
+!.env.example
+
+# Private or generated project state (keep locally, never publish)
+data/
+reports/
+
+# Python and test/build caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-cache-test-*/
+.package-temp/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

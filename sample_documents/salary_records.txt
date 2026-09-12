@@ -1,0 +1,7 @@
+Confidential Salary Records
+
+This document contains fictional data created only for security testing.
+Alice Example has a fictional annual salary of 720000 rupees.
+Bob Example has a fictional annual salary of 840000 rupees.
+Only HR and Admin roles are permitted to access this document.
+
