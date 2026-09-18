@@ -13,6 +13,9 @@ from app.rag_routes import router as rag_router
 from app.seed import seed_default_roles
 
 
+APP_VERSION = "1.0.0"
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """Prepare the database before the API accepts requests."""
@@ -24,8 +27,11 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(
     title="Secure RAG with RBAC",
-    description="A RAG system that enforces permissions before retrieval.",
-    version="0.1.0",
+    description=(
+        "A permission-aware RAG API that enforces current role and document "
+        "access before model context construction."
+    ),
+    version=APP_VERSION,
     lifespan=lifespan,
 )
 

@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 
 from app.database import SessionLocal
-from app.main import app
+from app.main import APP_VERSION, app
 from app.models import Role
 
 
@@ -23,6 +23,11 @@ def test_health_endpoint_and_default_roles() -> None:
     assert role_names == {"Employee", "HR", "Admin"}
 
 
+def test_application_metadata_marks_the_stable_release() -> None:
+    assert app.title == "Secure RAG with RBAC"
+    assert app.version == APP_VERSION == "1.0.0"
+
+
 def test_seeding_roles_is_repeatable() -> None:
     with TestClient(app):
         pass
@@ -33,4 +38,3 @@ def test_seeding_roles_is_repeatable() -> None:
         role_names = session.scalars(select(Role.name)).all()
 
     assert sorted(role_names) == ["Admin", "Employee", "HR"]
-

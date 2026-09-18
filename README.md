@@ -8,11 +8,13 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![SQLite](https://img.shields.io/badge/SQLite-Permissions-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 [![Qdrant](https://img.shields.io/badge/Qdrant-Vector%20Search-DC244C?logo=qdrant&logoColor=white)](https://qdrant.tech/)
+[![Tests](https://github.com/GaganUH/secure-rag-rbac/actions/workflows/tests.yml/badge.svg)](https://github.com/GaganUH/secure-rag-rbac/actions/workflows/tests.yml)
+[![Version](https://img.shields.io/badge/version-1.0.0-1565C0)](#overview)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?logo=windows&logoColor=white)](#prerequisites)
 
 **Authenticate · Filter permitted documents · Retrieve · Recheck access · Generate a cited answer**
 
-[Overview](#overview) • [Features](#features) • [Installation](#installation) • [Usage](#usage) • [Output](#output) • [Limitations](#limitations)
+[Overview](#overview) • [Features](#features) • [Installation](#installation) • [Usage](#usage) • [Output](#output) • [Security](#security) • [Limitations](#limitations)
 
 </div>
 
@@ -92,8 +94,10 @@ secure-rag-rbac/
 │   └── ...              API, authentication, ingestion, retrieval, evaluations
 ├── tests/               Automated tests with isolated test data
 ├── sample_documents/    Fictional handbook and salary files
+├── .github/workflows/   Automated GitHub test checks
 ├── .gitignore
 ├── README.md
+├── SECURITY.md
 └── requirements.txt
 ```
 
@@ -302,6 +306,10 @@ Without a permitted source, the system has no authorized evidence for a document
 ## Responsible use
 
 Use fictional or otherwise approved documents while testing. Do not upload real confidential data to an external model account without reviewing its current data-handling terms and your organization's policy. Keep passwords, API keys, local databases, uploads, and generated reports out of Git.
+
+## Security
+
+The security model, supported release, disclosure process, secret-handling rules, and known boundaries are documented in [SECURITY.md](SECURITY.md). Please report suspected vulnerabilities privately instead of placing sensitive details in a public issue.
 
 ## Future improvements
 
