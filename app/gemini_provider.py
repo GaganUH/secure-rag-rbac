@@ -6,7 +6,7 @@ import re
 import httpx
 
 
-DEFAULT_GEMINI_MODEL = "gemini-3.8-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.1-flash-lite"
 
 
 class GeminiConfigurationError(Exception):

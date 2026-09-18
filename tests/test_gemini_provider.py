@@ -36,7 +36,7 @@ def test_gemini_request_uses_header_and_prepared_prompt(monkeypatch) -> None:
     assert "test-key-not-real" not in url
     assert kwargs["headers"]["x-goog-api-key"] == "test-key-not-real"
     assert kwargs["json"] == {
-        "model": "gemini-3.8-flash",
+        "model": "gemini-3.1-flash-lite",
         "store": False,
         "input": "Authorized context",
     }

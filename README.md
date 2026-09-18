@@ -175,7 +175,7 @@ All names and salary amounts in the sample files are fictional. On a fresh insta
 
 ### Enable Gemini answers
 
-Create a key in Google AI Studio and store it in a Windows user environment variable named `GEMINI_API_KEY`. Close and reopen the terminal, then restart the API. Never place the key in source code, screenshots, Git commits, or chat messages. The optional `GEMINI_MODEL` variable changes the model; the code defaults to `gemini-3.8-flash`.
+Create a key in Google AI Studio and store it in a Windows user environment variable named `GEMINI_API_KEY`. Close and reopen the terminal, then restart the API. Never place the key in source code, screenshots, Git commits, or chat messages. The optional `GEMINI_MODEL` variable changes the model; the code defaults to `gemini-3.1-flash-lite`, which is sufficient for short grounded answers and keeps generation latency lower than larger reasoning models.
 
 If a query has no accessible source, `/rag/ask` returns a refusal without a Gemini call. A missing key returns HTTP 503 only when a permitted source exists. The provider request uses `store=false` for interaction state, but that setting does not replace the provider's data-use terms; check current terms before considering sensitive material.
 
